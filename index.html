@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج حجز المقاعد</title>
+</head>
+<body>
+
+    <h2>حجز المقاعد</h2>
+    <form id="bookingForm">
+        <label for="time">اختر الوقت:</label>
+        <select id="time" onchange="loadSeats()">
+            <!-- سيتم ملء أوقات الحجز ديناميكيًا بواسطة JavaScript -->
+        </select>
+
+        <h3>اختيار المقعد:</h3>
+        <div id="seats">
+            <!-- سيتم ملء المقاعد ديناميكيًا هنا -->
+        </div>
+
+        <button type="submit">حجز</button>
+    </form>
+
+    <script>
+        // أوقات الحجز من 9:00 صباحًا إلى 2:00 مساءً مع 25 دقيقة بين كل حجز
+        const times = [];
+        let startHour = 9;
+        let startMinute = 0;
+        while (startHour < 14 || (startHour === 14 && startMinute === 0)) {
+            let hour = startHour < 10 ? '0' + startHour : startHour;
+            let minute = startMinute < 10 ? '0' + startMinute : startMinute;
+            times.push(`${hour}:${minute}`);
+            
+            startMinute += 25;
+            if (startMinute === 60) {
+                startMinute = 0;
+                startHour++;
+            }
+        }
+
+        // ملء خيارات الأوقات في القائمة المنسدلة
+        const timeSelect = document.getElementById("time");
+        times.forEach(time => {
+            const option = document.createElement("option");
+            option.value = time;
+            option.textContent = time;
+            timeSelect.appendChild(option);
+        });
+
+        // تحميل المقاعد بناءً على الوقت المختار
+        function loadSeats() {
+            const selectedTime = document.getElementById("time").value;
+            const seatsDiv = document.getElementById("seats");
+            seatsDiv.innerHTML = ''; // إعادة تعيين المقاعد
+
+            for (let i = 1; i <= 6; i++) {
+                const seat = document.createElement("div");
+                seat.classList.add("seat");
+                seat.textContent = `مقعد ${i} - ${selectedTime}`;
+                seat.setAttribute("data-time", selectedTime);
+                seat.onclick = () => bookSeat(seat);
+                seatsDiv.appendChild(seat);
+            }
+        }
+
+        // حجز المقعد
+        function bookSeat(seat) {
+            seat.style.backgroundColor = "gray"; // تغيير لون المقعد عند الحجز
+            seat.textContent = seat.textContent + " (محجوز)";
+            seat.onclick = null; // إيقاف الحجز مرة أخرى
+
+            // إرسال البيانات إلى قاعدة البيانات عبر AJAX
+            const formData = new FormData();
+            formData.append('time', seat.getAttribute("data-time"));
+            formData.append('seat', seat.textContent);
+
+            fetch('save_booking.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // إظهار رسالة نجاح أو فشل الحجز
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("حدث خطأ أثناء الحجز.");
+            });
+        }
+
+        // تحميل المقاعد الأولية
+        loadSeats();
+    </script>
+</body>
+</html>
