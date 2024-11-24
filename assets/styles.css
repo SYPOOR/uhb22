@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+form {
+    margin: 20px;
+}
+
+h2, h3 {
+    color: #2C3E50;
+}
+
+#seats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.seat {
+    padding: 10px;
+    border: 1px solid #2C3E50;
+    cursor: pointer;
+    background-color: #ECF0F1;
+    width: 100px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.seat:hover {
+    background-color: #BDC3C7;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980B9;
+}
